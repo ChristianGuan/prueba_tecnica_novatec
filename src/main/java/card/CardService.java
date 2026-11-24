@@ -5,6 +5,7 @@
 package card;
 
 import java.security.SecureRandom;
+import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,5 +54,41 @@ public class CardService {
                 saved.getCurrency()
         );
     
+    }
+    
+    @Transactional(readOnly = true)
+    public CardResponse get(UUID cardID){
+        Card card = cards.findById(cardID).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tarjeta no encontrada"));
+        
+        return new CardResponse(
+                card.getCardID(),
+                card.getCardNumber(),
+                card.getStatus(),
+                card.getExpiresAt(),
+                card.getBalance(),
+                card.getCurrency()
+                
+        );
+    }
+    
+    @Transactional
+    public CardResponse activate(UUID cardUuid){
+        Card card = cards.findById(cardUuid).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tarjeta no encontrada"));
+        if(card.getStatus() == CardStatus.BLOCKED){
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Tarjeta Bloqueada");
+        }
+        if(card.getStatus() == CardStatus.ISSUED){
+            card.setStatus(CardStatus.ACTIVE);
+            cards.save(card);
+        }
+        
+        return new CardResponse(
+                card.getCardID(),
+                card.getCardNumber(),
+                card.getStatus(),
+                card.getExpiresAt(),
+                card.getBalance(),
+                card.getCurrency()
+        );
     }
 }
