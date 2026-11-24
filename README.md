@@ -27,3 +27,13 @@ curl -i -X POST http://localhost:8080/cards \
   Para consultar y activar, reemplazar CARD_ID por el identificador devuelto en la emisión:
   curl -i http://localhost:8080/cards/CARD_ID
   curl -i -X POST http://localhost:8080/cards/CARD_ID/activate
+
+
+  ///// A tener en cuenta:
+
+Para la base de datos utilicé PostgreSQL. Primero se debe crear la base db_prueba_novatec y configurar la conexión en application.properties. Al iniciar la aplicación, Hibernate crea las tablas.
+
+Para probar la emisión, es necesario insertar un producto:
+INSERT INTO products (product_id, name, type)
+VALUES ('123456', 'Producto débito', 'DEBIT');
+En mi equipo utilicé localhost y el puerto 5433; estos datos deben ajustarse según el entorno.
